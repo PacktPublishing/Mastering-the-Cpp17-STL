@@ -356,15 +356,15 @@ public:
 
     reference operator*() { return static_cast<reference>(*iter); }
     It operator->() { return iter; }
-    constexpr decltype(auto) operator[](difference_type n) const { return *std::move(iter[n]); }
+    constexpr reference operator[](difference_type n) const { return std::move(iter[n]); }
 
     auto& operator++() { ++iter; return *this; }
-    auto& operator++(int) { auto result = *this; ++*this; return result; }
+    auto operator++(int) { auto result = *this; ++*this; return result; }
     auto& operator--() { --iter; return *this; }
-    auto& operator--(int) { auto result = *this; --*this; return result; }
+    auto operator--(int) { auto result = *this; --*this; return result; }
 
-    constexpr auto& operator+=(difference_type n) const { iter += n; return *this; }
-    constexpr auto& operator-=(difference_type n) const { iter -= n; return *this; }
+    constexpr auto& operator+=(difference_type n) { iter += n; return *this; }
+    constexpr auto& operator-=(difference_type n) { iter -= n; return *this; }
 };
 
 // I've omitted the definitions of non-member operators
@@ -403,6 +403,13 @@ void test()
         std::move_iterator(input.end()),
         output.begin()
     );
+    
+    std::vector<std::string> output_b(2);
+    std::move_iterator it{output.begin()};
+    for (std::size_t i{0}; i != output.size(); ++i)
+    {
+        output_b.emplace_back(it[i]);
+    }
 //dex14
 }
 } // namespace ex12
